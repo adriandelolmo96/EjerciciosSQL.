@@ -30,7 +30,7 @@ cliente_id (entero, clave externa referenciando a la tabla "Clientes"), producto
 CREATE TABLE Pedidos (
 id INT AUTO_INCREMENT PRIMARY KEY,
 cliente_id INT,
-producto VARCHAR (255),
+producto VARCHAR (255), /* esta columna deberia ser un id de producto y clave externa de un id en una tabla productos */ 
 cantidad INT,
 FOREIGN KEY (cliente_id) REFERENCES clientes(id)
 );
@@ -99,3 +99,39 @@ WHERE cantidad >= 5;
 
 SELECT * FROM clientes 
 WHERE nombre LIKE 'A%';
+
+
+/* 16. Realizar una consulta que muestre el nombre del cliente y el total de pedidos
+realizados por cada cliente. */
+
+SELECT clientes.nombre, count(pedidos.pedido_id) as numero_de_pedidos FROM clientes
+INNER JOIN pedidos ON pedidos.cliente_id = clientes.id
+GROUP BY clientes.id;
+
+/* 17. Realizar una consulta que muestre el nombre del producto y la cantidad total de
+pedidos de ese producto. */
+
+SELECT productos.nombre, COUNT(pedidos.pedidos_id) as cantidad_de_pedidos FROM productos
+INNER JOIN pedidos ON productos.nombre = pedidos.producto
+GROUP BY productos.nombre
+ORDER BY cantidad_de_pedidos DESC;
+
+/* 18. Agregar una columna llamada "fecha" a la tabla "Pedidos" de tipo fecha. */
+
+ALTER TABLE pedidos
+ADD COLUMN fecha DATE;
+
+/* 19. Agregar una clave externa a la tabla "Pedidos" que haga referencia a la tabla
+"Productos" en la columna "producto". */
+
+ALTER TABLE pedidos
+ADD CONSTRAINT referencia_productos
+FOREIGN KEY (productos) REFERENCES productos(nombre);
+
+/* 20. Realizar una consulta que muestre los nombres de los clientes, los nombres de
+los productos y las cantidades de los pedidos donde coincida la clave externa. */
+
+SELECT clientes.nombre as cliente, productos.nombre as nombre_producto, pedidos.cantidad FROM CLIENTES
+join pedidos on pedidos.cliente_id = clientes.id
+join productos on productos.nombre = pedidos.producto
+ORDER BY pedidos.cantidad DESC;
